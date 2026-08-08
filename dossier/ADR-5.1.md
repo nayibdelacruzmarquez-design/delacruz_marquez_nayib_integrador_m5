@@ -7,6 +7,7 @@
   3. Reescritura completa del framework a modelo asíncrono ASGI.
 * **Criterio de Selección:** Maximizar el throughput y la tolerancia a cargas simultáneas garantizando compatibilidad con la base de código existente sin requerir migración asíncrona total.
 * **Evidencia Empírica:** La ejecución del benchmark concuerda con la salida cruda registrada en las pruebas del sistema:
+
 ```text
 ============================================================
 EVIDENCIA DE EJECUCIÓN - SPIKE 5.1
@@ -23,4 +24,11 @@ Throughput estimado            : 80.13 req/s
 * **Decisión:** Adoptar un modelo de ejecución multiproceso apoyado en servidor WSGI de producción (Gunicorn/Waitress) configurado con la fórmula de 2N+1 workers.
 * **Consecuencias Positivas:** Se elimina el bloqueo por hilo individual, aumentando la capacidad de respuesta concurrente con bajo esfuerzo de refactorización.
 * **Consecuencias Negativas/Riesgos:** Incremento en el consumo de memoria RAM por cada proceso worker e imposibilidad de mantener variables globales en memoria compartida.
+
+
+
+
+
+
+
 
