@@ -1,0 +1,22 @@
+# Entornos virtuales
+.venv/
+venv/
+ENV/
+
+# Archivos de PyCharm y VSCode
+.idea/
+.vscode/
+
+# Cache de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Base de datos local
+instance/
+*.db
+*.sqlite3
+
+# Logs
+*.log
