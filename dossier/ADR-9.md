@@ -1,12 +1,11 @@
-# ADR 9: Decisiones Finales de Despliegue, Mantenimiento y Evolución
+# ADR 9: Decisiones Finales de Integración, Despliegue y Mantenimiento
 
-* **Contexto:** Una vez refactorizada la API REST, validados los benchmarks de rendimiento (5.1 a 5.7) y definida la estrategia de empaquetado, se requiere formalizar la decisión arquitectónica para la distribución, despliegue y mantenimiento continuo de la aplicación en producción.
+* **Contexto:** Tras investigar las 8 decisiones por separado (del 5.1 al 5.8), se requirió integrar todos los componentes en una sola API REST contenerizada para validar si surgían fricciones o incompatibilidades al ejecutarse en conjunto.
 * **Alternativas:** 
-  1. Despliegue tradicional directo en servidor VPS mediante entorno virtual de Python (`.venv`).
-  2. Arquitectura distribuida en microservicios sobre orquestadores complejos (Kubernetes).
-  3. Contenerización basada en Docker utilizando una imagen ligera (`python:3.12-slim`) en arquitectura monolítica modular stateless.
-* **Criterio de Selección:** Garantizar la portabilidad total del entorno, la repetibilidad e idempotencia en la instalación y la facilidad de mantenimiento sin agregar sobreingeniería a la infraestructura.
-* **Evidencia Empírica:** La factibilidad del empaquetado fue validada empíricamente en el Spike 5.8 (`src/tests/test_spike_5_8.py`), complementada por el manifiesto `Dockerfile` ubicado en la raíz del proyecto y la ejecución exitosa de la suite completa de pruebas de integración.
-* **Decisión:** Adoptar la contenerización con Docker como estándar único para el empaquetado y despliegue de la API REST, apoyada en Flask-Migrate para la gestión de esquema de la base de datos relacional.
-* **Consecuencias Positivas:** Eliminación absoluta de discrepancias de entorno ("en mi máquina sí funciona"), simplificación del proceso de integración continua (CI/CD) y aislamiento de dependencias del sistema operativo.
-* **Consecuencias Negativas / Riesgos:** Necesidad de gestionar volúmenes persistentes para la base de datos en instancias mono-nodo y requerimiento del motor Docker en la máquina host.
+  1. Reestructurar la arquitectura cambiando el servidor síncrono a asíncrono (ASGI) tras detectar bloqueos en Docker.
+  2. Mantener la arquitectura monolítica modular síncrona alineando los límites de los módulos de forma estricta.
+* **Criterio de Selección:** Priorizar la cohesión del sistema y la facilidad de mantenimiento sin introducir sobreingeniería tras verificar la compatibilidad entre el ORM, la inyección de dependencias y el contenedor.
+* **Evidencia Empírica:** Durante el Spike 5.8 y las pruebas de integración, las 8 decisiones encajaron sin fricción severa debido a que desde el Spike 5.1 se optó por un WSGI síncrono compatible con SQLAlchemy, la serialización JSON pura (5.2 y 5.3) no requirió dependencias pesadas en Docker, y las migraciones de SQLite/Alembic (5.4) se ejecutaron sin bloqueos al usar el patrón Application Factory (5.6).
+* **Decisión:** Mantener las 8 decisiones arquitectónicas previas y empaquetar la solución integral mediante Docker apoyado en Flask-Migrate y Pytest.
+* **Consecuencias Positivas:** Integración limpia, 0% de conflictos de compatibilidad entre librerías, y portabilidad absoluta del servicio.
+* **Consecuencias Negativas / Riesgos:** Se mantiene el riesgo de cuello de botella en I/O si la carga de peticiones concurrentes excede el pool de workers de WSGI.
