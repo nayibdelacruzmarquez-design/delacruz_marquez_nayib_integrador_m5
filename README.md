@@ -50,6 +50,7 @@ pip install -r requirements.txt
 2. Ejecutar la suite de pruebas y spikes de rendimiento
 ```PowerShell
 python src/tests/test_spike_5_1.py
+python src/tests/test_spike_5_2.py
 python src/tests/test_spike_5_3.py
 python src/tests/test_spike_5_4.py
 python src/tests/test_spike_5_5.py
